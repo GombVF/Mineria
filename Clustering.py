@@ -1,3 +1,4 @@
+from multiprocessing.sharedctypes import Value
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -47,7 +48,13 @@ def auxMethod(**kwargs):
     return st.text('Esperando opciones de cluster...')
 
 def cluster():
+    dataE=''
     st.title("Clustering.")
+    st.sidebar.subheader('Información de sección.')
+    st.sidebar.write('El proceso de clustering es un proceso importante para notar similitud entre los datos y crear grupos que comparten características'
+    +' similares. El proceso de clustering se divide en Jerarquico y Particional y ambos requieren de un estandarizado de los datos y de una metrica de distancia.')
+    st.sidebar.write('Para ambos procesos es necesario ingresar la cantidad de clusters que se desean, como ayuda, se muestran graficos que indican'+
+        ' una cantidad recomendable de clusters para los datos segun los elementos seleccionados.')
     method_dict={'Normalizado':StandardScaler(),'Escalado':MinMaxScaler()}
     medida_dict={'Euclidiana':'euclidean','Chebyshev':'shebyshev','Manhattan':'cityblock','Minkowski':'minkowski'}
     clust_dict={'Jerarquico':jera,'Particional':part,'aux':auxMethod}
@@ -58,30 +65,37 @@ def cluster():
             cluster_type=st.radio('Tipo de clusterizado',['Jerarquico','Particional'])
             medida=st.radio('Tipo de medición',['Euclidiana','Chebyshev','Manhattan','Minkowski'])
             sb=st.form_submit_button('Calcular')
-        dataE=method_dict[method].fit_transform(data)
         SSE=[]
-        if sb and cluster_type=='Jerarquico':
-            shc.dendrogram(shc.linkage(dataE,method='complete',metric=medida_dict[medida]))
-            fig=plt.plot()
-            st.pyplot(fig)
-            st.session_state.aux=cluster_type
-        elif sb:
-            st.session_state.aux=cluster_type
-            for i in range(2,16):
-                km=KMeans(n_clusters=i,random_state=0)
-                km.fit(dataE)
-                SSE.append(km.inertia_)
-            plt.xlabel('Cantidad de clusters')
-            plt.ylabel('SSE')
-            plt.plot(range(2,16),SSE,marker='o')
-            fig=plt.plot()
-            st.pyplot(fig)
-            k= KneeLocator(range(2,16),SSE,curve='convex',direction='decreasing')
-            plt.style.use('ggplot')
-            st.pyplot(k.plot_knee())
-            st.text('Se recomiendan '+str(k.elbow)+' cluster.')  
+        try:
+            dataE=method_dict[method].fit_transform(data)
+        except ValueError:
+            st.subheader('Existe una variable que impide el proceso de clustering. Revisa los datos.')
+        else:
+            if sb and cluster_type=='Jerarquico':
+                shc.dendrogram(shc.linkage(dataE,method='complete',metric=medida_dict[medida]))
+                fig=plt.plot()
+                st.pyplot(fig)
+                st.session_state.aux=cluster_type
+            elif sb:
+                st.session_state.aux=cluster_type
+                for i in range(2,16):
+                    km=KMeans(n_clusters=i,random_state=0)
+                    km.fit(dataE)
+                    SSE.append(km.inertia_)
+                plt.xlabel('Cantidad de clusters')
+                plt.ylabel('SSE')
+                plt.plot(range(2,16),SSE,marker='o')
+                fig=plt.plot()
+                st.pyplot(fig)
+                k= KneeLocator(range(2,16),SSE,curve='convex',direction='decreasing')
+                plt.style.use('ggplot')
+                st.pyplot(k.plot_knee())
+                st.text('Se recomiendan '+str(k.elbow)+' cluster.')  
     with st.container():
-        dataE=method_dict[method].fit_transform(data)
+        try:
+            dataE=method_dict[method].fit_transform(data)
+        except ValueError:
+            pass
         clust_dict[st.session_state.aux](data=data,dataE=dataE,medida=medida_dict[medida])
 
 

@@ -15,8 +15,8 @@ def visualizador(data,variables, tipo,compare):
                 plt.title(i)
                 plt.ylabel('Cantidad de datos')
                 plt.xlabel('Valor de los datos')
-                fig=plt.plot()
-                st.pyplot(fig)
+                fig=plt.plot(figsize=(50,50))
+                st.pyplot(fig,clear_figure=True)
         else:
             data[variables].hist()
             fig=plt.plot()
@@ -46,11 +46,12 @@ def visualizador(data,variables, tipo,compare):
 def EDA():
     st.session_state.aux= 'aux'
     st.title("Análisis exploratorio de datos.")
-    st.sidebar.text('Es importante conocer el comportamiento de nuestros datos'
+    st.sidebar.subheader('Información de sección.')
+    st.sidebar.write('Es importante conocer el comportamiento de nuestros datos'
         +' es por eso que debemos de realizar un análisis sobre ellos.')
-    st.sidebar.text('Es posible seleccionar las variables que se desean anaizar'
+    st.sidebar.write('Es posible seleccionar las variables que se desean anaizar'
         +' además de poder compararlas en una misma gráfica.')
-    st.sidebar.text('NOTA: Las gráficas de barra no pueden ser comparadas ya que'
+    st.sidebar.write('NOTA: Las gráficas de barra no pueden ser comparadas ya que'
         +' se pensaron para graficar variables categoricas y cada variable'
         +' tiene su propia gráfica.')
     data=st.session_state.data[st.session_state.sp]

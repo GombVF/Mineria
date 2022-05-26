@@ -38,6 +38,16 @@ def componentes(estandar,data):
 def sel():
     st.session_state.aux= 'aux'
     st.title("Selección de características.")
+    st.sidebar.subheader('Información de sección.')
+    st.sidebar.write('Normalmente los datos tienen muchas variables que para realizar un análisis no necesitamos.'+
+        ' Es necesario deshacernos de algunas, para eso hacemos uso de correlaciones o componentes principales.')
+    st.sidebar.write('NOTA: para las correlaciones no importa el tipo de estandarizado ya que no hace uso de eso.')
+    st.sidebar.write('También podemos realizar cambios en los valores de las variables siguiendo el siguiente formato:')
+    st.sidebar.write('val1:newVal1,val2:newVal2')
+    st.sidebar.write('Donde val es el valor a cambiar, cada valor a cambiar debe de estar seguido por dos puntos y el nuevo valor.')
+    st.sidebar.write('Para cambiar más de un valor, es necesario separar los valores con comas')
+    st.sidebar.write('Finalmente, podemos llegar a equivocarnos y modificar o eliminar una variable que deberiamos de preservar'+
+        ' como originalmente estaba, por eso tenemos un control de versiones, para regresar a una version de los datos que queremos')
     data=st.session_state.data[st.session_state.sp]
     with st.container():
         with st.form('Opciones'):
@@ -87,10 +97,6 @@ def sel():
     with st.container():
         with st.form('Convertir variables'):
             var=st.selectbox('Selecciona la variable cuyos valores quieres convertir',data.columns)
-            st.text('Nota: para realizar el cambio de valores se debe de seguir el siguiente formato.')
-            st.text('val1:newVal1,val2:newVal2')
-            st.text('Donde val es el valor a cambiar, cada valor a cambiar debe de estar seguido por dos puntos y el nuevo valor.')
-            st.text('Para cambiar más de un valor, es necesario separar los valores con comas')
             c=st.text_input('Ingresa el cambio')
             sb=st.form_submit_button('Cambiar')
         if sb:
